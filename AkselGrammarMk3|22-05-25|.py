@@ -1,6 +1,7 @@
 
 
 import random
+from tkinter import Y
 
 class Noun:
     def __init__(self, count, plural):
@@ -53,14 +54,14 @@ for word, properties in DeterminerDict.items():
     word = Determiner(properties)
 
 # stuff so I don't get errors
-NEGprime = []
-DEGprime = []
-Mprime   = []
-Nprime   = []
-Pprime   = []
-Vprime   = []
-Aprime   = []
-Cprime   = []
+NEGbar   = []
+DEGbar   = []
+Mbar     = []
+Nbar     = []
+Pbar     = []
+Vbar     = []
+Abar     = []
+Cbar     = []
 VP       = []
 AP       = []
 CP       = []
@@ -72,31 +73,32 @@ N    = "noun"
 D    = "determiner"
 A    = "adjective"
 C    = "complimentizer"
-NEG  = 'not'
+NP   = "noun phrase"
+NEG  = "not"
 DEG  = "degree"
 NAME = "name"
 PRON = "pronoun"
 POSS = "possessive marker"
 # Phrase Structures
-NEGP  = [NEGprime]
+NEGP  = [NEGbar]
 MEASP = []
-DEGP  = [DEGprime, AP]
-PP    = [MEASP, Pprime]
-NP    = [PRON, NAME, Nprime]
+DEGP  = [DEGbar, AP]
+PP    = [MEASP, Pbar]
 DP    = [[NP, POSS], D]
-MP    = [[NP, Mprime], [CP, Nprime]]
-VP    = [[V, VP], [Vprime]]
-AP    = [Aprime]
-CP    = [Cprime]
+NP    = [PRON, NAME, Nbar, [DP, Nbar], [DEGP]]
+MP    = [[NP, Mbar], [CP, Nbar]]
+VP    = [[V, VP], [Vbar]]
+AP    = [Abar]
+CP    = [Cbar]
 # Prime Structures
-NEGprime = [NEG, VP]
-DEGprime = [DEG, AP]
-Mprime   = [[M, VP], [M, NEGP, VP]]
-Nprime   = [N, PP, CP]
-Pprime   = [[P, NP], [P, MP], [P, PP]]
-Vprime   = [V]
-Aprime   = [A, PP, CP]
-Cprime   = [C, MP]
+NEGbar = [NEG, VP]
+DEGbar = [DEG, AP]
+Mbar   = [[M, VP], [M, NEGP, VP]]
+Nbar   = [N, PP, CP]
+Pbar   = [[P, NP], [P, MP], [P, PP]]
+Vbar   = [V]
+Abar   = [A, PP, CP]
+Cbar   = [C, MP]
 
 
 # Grabbing Lexical Items
@@ -118,9 +120,39 @@ def GenerateMP():
 
 
 
-print(MP)
-print(PP)
-print(Mprime)
+print('Would you like to run a full test gamut? {y/n}')
+
+if input() == 'y':
+    print('The phrases:')
+    print(NEGP, MEASP, DEGP, PP, DP)
+    print(NP, MP, VP, AP, CP)
+    print('The bars:')
+    print(NEGbar, DEGbar, Mbar, Nbar, Pbar, Vbar, Abar, Cbar)
+    print('Checking the \'get\' statements:')
+    print(GetDeterminer, GetModal, GetVerb, GetNoun)
+else:
+    print('Would you like to test the phrases?')
+    if input() == 'y':
+        print('The phrases:')
+        print(NEGP, MEASP, DEGP, PP, DP)
+    else:
+        print('Would you like to test the bars?')
+        if input() == 'y':
+            print('The bars:')
+            print(NEGbar, DEGbar, Mbar, Nbar, Pbar, Vbar, Abar, Cbar)
+        else:
+            print('Would you like to test the get statements?')
+            if input() == 'y':
+                    print(GetDeterminer, GetModal, GetVerb, GetNoun)
+
+
+            
+
+
+
+
+
+
 
 
 

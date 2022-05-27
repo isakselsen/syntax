@@ -53,18 +53,6 @@ DeterminerDict ['an']   = (False)
 for word, properties in DeterminerDict.items():
     word = Determiner(properties)
 
-# stuff so I don't get errors
-NEGbar   = []
-DEGbar   = []
-Mbar     = []
-Nbar     = []
-Pbar     = []
-Vbar     = []
-Abar     = []
-Cbar     = []
-VP       = []
-AP       = []
-CP       = []
 # Lexical Item Names
 M    = "modal"
 V    = "verb"
@@ -80,25 +68,26 @@ NAME = "name"
 PRON = "pronoun"
 POSS = "possessive marker"
 # Phrase Structures
-NEGP  = [NEGbar]
+NEGP  = ['NEGbar']
 MEASP = []
-DEGP  = [DEGbar, AP]
-PP    = [MEASP, Pbar]
-DP    = [[NP, POSS], D]
-NP    = [PRON, NAME, Nbar, [DP, Nbar], [DEGP]]
-MP    = [[NP, Mbar], [CP, Nbar]]
-VP    = [[V, VP], [Vbar]]
-AP    = [Abar]
-CP    = [Cbar]
+DEGP  = ['DEGbar', 'AP']
+PP    = ['MEASP', 'Pbar']
+DP    = [['NP', 'POSS'], D]
+NP    = ['PRON', 'NAME', 'Nbar', ['DP', 'Nbar'], ['DEGP']]
+MP    = [['NP', 'Mbar'], ['CP', 'Nbar']]
+VP    = [[V, 'VP'], ['Vbar']]
+AP    = ['Abar']
+CP    = ['Cbar']
 # Prime Structures
-NEGbar = [NEG, VP]
-DEGbar = [DEG, AP]
-Mbar   = [[M, VP], [M, NEGP, VP]]
-Nbar   = [N, PP, CP]
-Pbar   = [[P, NP], [P, MP], [P, PP]]
+NEGbar = ['NEG', 'VP']
+DEGbar = ['DEG', 'AP']
+Mbar   = [[M, 'VP'], [M, 'NEGP', 'VP']]
+Nbar   = [N, 'PP', 'CP']
+Pbar   = [[P, 'NP'], [P, 'MP'], [P, 'PP']]
 Vbar   = [V]
-Abar   = [A, PP, CP]
-Cbar   = [C, MP]
+Abar   = [A, 'PP', 'CP']
+Cbar   = [C, 'MP']
+
 
 
 # Grabbing Lexical Items
@@ -111,12 +100,8 @@ def GetVerb():                                           #returns verb
 def GetNoun():                                           #returns noun
     return random.choice(list(NounDict.keys()))
 
-
-
 def GenerateMP():
     return random.choice(MP)  #this is generating the empty nodes instead of the markers that eventually represent those nodes
-
-
 
 
 
@@ -146,17 +131,10 @@ else:
                     print(GetDeterminer, GetModal, GetVerb, GetNoun)
 
 
-            
+                    
+                    
 
 
 
-
-
-
-
-
-
-
-
-#   JUNK TO GO GET LATER
+#   JUNK TO GO GET TO LATER
 #Vprime   = [[V], [V, NP], [V, DEGP], [V, PP], [V, CP], [V, NP, DEGP], [V, NP, PP], [V, NP, CP], [V, ]PP, CP] # FINISH MAKING ALL POSSIBLE Vprime COMBOS

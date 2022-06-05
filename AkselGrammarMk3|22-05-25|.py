@@ -3,55 +3,72 @@
 import random
 from tkinter import Y
 
-class Noun:
-    def __init__(self, count, plural):
-        self.count  = count
+class Noun:                                                 #noun class, with: count/mass, plrurality
+    def __init__(self, base_form, count, plural):
+        self.base_form = base_form
+        self.count     = count
+        self.plural    = plural
+class Verb:                                                 #verb class with: max/min args, plurality, weak/strong
+    def __init__(self, base_form, maxargs, minargs, plural, weak = True):
+        self.base_form = base_form
+        self.maxargs   = maxargs
+        self.minargs   = minargs
+        self.plural    = plural
+        self.weak      = weak
+class Modal:                                                #modal class with: finite/infinitive
+    def __init__(self, base_form, finite):
+        self.base_form = base_form
+        self.finite    = finite
+class Determiner:                                           #determiner class with: plurality
+    def __init__(self, base_form, plural):
+        self.base_form = base_form
         self.plural = plural
-class Verb:
-    def __init__(self, maxargs, minargs, plural, weak):
-        self.maxargs = maxargs
-        self.minargs = minargs
-        self.plural  = plural
-        self.weak    = weak
-class Modal:
-    def __init__(self, finite):
-        self.finite = finite
-class Determiner:
-    def __init__(self, plural):
-        self.plural = plural
+class Pronoun:
+    def __init__(self, base_form, gender, plural):
+        self.base_form = base_form
+        self.gender = gender
+        self.plurality = plural
 #some nouns
 NounDict             = {}
-NounDict ['love']    = (False, True)
-NounDict ['sand']    = (False, True)
-NounDict ['cup']     = (True, False)
-NounDict ['cats']    = (True, True)
-NounDict ['bravery'] = (False, True)
-NounDict ['oxen']    = (True, True)
+NounDict ['love']    = ('love', False, False)
+NounDict ['beans']   = ('beans', True, True)
+NounDict ['sand']    = ('sand', False, False)
+NounDict ['cup']     = ('cup', True, False)
+NounDict ['cats']    = ('cats', True, True)
+NounDict ['bravery'] = ('bravery', False, True)
+NounDict ['oxen']    = ('oxen', True, True)
 for word, properties in NounDict.items():
     word = Noun(*properties)
 #some verbs
 VerbDict               = {}
-VerbDict ['wait']      = (1, 1, True, True)
-VerbDict ['waits']     = (1, 1, False, True)
-VerbDict ['resonate']  = (2, 1, True, True)
-VerbDict ['resonates'] = (2, 1, False, True)
+VerbDict ['wait']      = ('wait', 1, 1, True)
+VerbDict ['waits']     = ('waits', 1, 1, False)
+VerbDict ['resonate']  = ('resonate', 2, 1, True)
+VerbDict ['resonates'] = ('resonates', 2, 1, False)
 for word, properties in VerbDict.items():
     word = Verb(*properties)
 #some modals
 ModalDict          = {}
-ModalDict ['will'] = (True)
-ModalDict ['may']  = (True)
-ModalDict ['can']  = (True)
+ModalDict ['will'] = ('will', True)
+ModalDict ['may']  = ('may', True)
+ModalDict ['can']  = ('can', True)
 for word, properties in ModalDict.items():
-    word = Modal(properties)
+    word = Modal(*properties)
 #some determiners
 DeterminerDict          = {}
-DeterminerDict ['a']    = (False)
-DeterminerDict ['the']  = (False)
-DeterminerDict ['some'] = (True)
-DeterminerDict ['an']   = (False)
+DeterminerDict ['a']    = ('a', False)
+DeterminerDict ['the']  = ('the', False)
+DeterminerDict ['some'] = ('some', True)
+DeterminerDict ['an']   = ('an', False)
 for word, properties in DeterminerDict.items():
-    word = Determiner(properties)
+    word = Determiner(*properties)
+#some pronouns
+PronounDict          = {}
+PronounDict ['it'] = ('it', None, False)
+PronounDict ['she']  = ('she', 'Feminine', False)
+PronounDict ['They']  = ('They', None, None)
+for word, properties in PronounDict.items():
+    word = Pronoun(*properties)
 
 # Lexical Item Names
 M    = "modal"
@@ -71,7 +88,7 @@ NULL = ""
 # Phrase Structures
 NEGP  = ['NEGbar']
 MEASP = ['UNKNOWN']
-DEGP  = [['DEGbar', 'AP']]
+DEGP  = [['DEGbar']]
 PP    = [['MEASP', 'Pbar']]
 DP    = [['NP', 'POSS'], D]
 NP    = ['PRON', 'NAME', 'Nbar', ['DP', 'Nbar'], ['DEGP', 'Nbar'], ['DP', 'DEGP', 'Nbar']]
@@ -85,8 +102,8 @@ DEGbar = [['DEG', 'AP']]
 Mbar   = [[M, 'VP'], [M, 'NEGP', 'VP']]
 Nbar   = [[N, 'PP', 'CP']]
 Pbar   = [[P, 'NP'], [P, 'MP'], [P, 'PP']]
-Vbar   = [[V], [V, 'NP'], [V, 'NP', 'PP'], [V, 'PP']]
-Abar   = [[A, 'PP', 'CP']]
+Vbar   = [[V], [V, 'NP'], [V, 'NP', 'PP'], [V, 'PP'], [V, 'CP']]
+Abar   = [[A], [A, 'PP'], [A, 'CP'], [A, 'PP', 'CP']]
 Cbar   = [[C, 'MP']]
 
 
@@ -100,8 +117,10 @@ def GetVerb():                                           #returns verb
     return random.choice(list(VerbDict.keys()))
 def GetNoun():                                           #returns noun
     return random.choice(list(NounDict.keys()))
+def GetPronoun():                                           #returns pronoun
+    return random.choice(list(PronounDict.keys()))
 
-def GenerateNEGP():
+def GenerateNEGP():              
     return random.choice(NEGP)
 def GenerateMEASP():
     return random.choice(MEASP)
@@ -139,18 +158,55 @@ def GenerateAbar():
 def GenerateCbar():
     return random.choice(Cbar)
 
-def GenPhraseToNodeMP():
-    EMPEE = GenerateMP()
-    for ConstitL1 in EMPEE:
-        if ConstitL1 == ['NP', 'Mbar']:
-            for ConstitL2 in ConstitL2:
-                if ConstitL2 == 'NP':
-                    ConstitL2 = GenerateNP()
-                elif ConstitL2 == 'Mbar':
-                    ConstitL2 = GenerateMbar()
-        elif ConstitL1 == ['Mbar']:
-            ConstitL1 = GenerateMbar()
-    return EMPEE
+def GeneratePhraseDaughters(phrases):
+    next_phrase_level = []
+    for phrase in phrases:
+        if phrase == 'MP':
+            next_phrase_level.append(GenerateMP())
+        elif phrase == 'NP':
+            next_phrase_level.append(GenerateNP())
+        elif phrase == 'VP':
+            next_phrase_level.append(GenerateVP())
+        elif phrase == 'CP':
+            next_phrase_level.append(GenerateCP())
+        elif phrase == 'PP':
+            next_phrase_level.append(GeneratePP())
+        elif phrase == 'Pbar':
+            next_phrase_level.append(GeneratePbar())
+        elif phrase == 'Nbar':
+            next_phrase_level.append(GenerateNbar())
+        elif phrase == 'Cbar':
+            next_phrase_level.append(GenerateCbar())
+        elif phrase == 'Mbar':
+            next_phrase_level.append(GenerateMbar())
+        elif phrase == 'Vbar':
+            next_phrase_level.append(GenerateVbar())
+    print('This is the current phrase Im returning:', next_phrase_level)
+    return next_phrase_level
+
+def GeneratePhraseToNodes(starting_point):
+    if 'MP' or 'NP' or 'VP' or 'CP' or 'PP' or 'Pbar' or 'Nbar' or 'Cbar' or 'Mbar' or 'Vbar' in starting_point:
+        nodes = GeneratePhraseToNodes(GeneratePhraseDaughters(starting_point))
+    else:
+        return nodes
+
+def SpelloutNodes(surface_structure):
+    spellout = []
+    for node in surface_structure:
+        if node == 'D':
+            spellout.append(GetDeterminer())
+        elif node == 'N':
+            spellout.append(GetNoun())
+        elif node == 'V':
+            spellout.append(GetVerb())
+        elif node == 'M':
+            spellout.append(GetModal())
+    return spellout
+
+def DeriveSpellout(initial_phrase):
+    SpelloutNodes(GeneratePhraseToNodes(initial_phrase))
+
+
 
 
 
@@ -235,13 +291,17 @@ def Query():
         while numPs !=0:
             print(GenerateVbar())
             numPs -= 1
-
-    elif request == 'P2N MP':
-        print('How many MPs would you like to generate to the nodes?')
+    elif request == 'spellout':
+        print('what would you like to spellout?')
+        requested_top_level_phrase = input()
+        print('How many would you like to spell out?')
         numPs = int(input())
         while numPs !=0:
-            print(GenPhraseToNodeMP())
+            print((DeriveSpellout(requested_top_level_phrase)))
             numPs -= 1
+
+    #elif request == 'Pop Deep Structure':
+
 
     print('\nAnything else? (y/n)')
     if input() == 'y':
@@ -259,6 +319,12 @@ print('\nThank you.  Program ended.')
 
 print('')
 print('')
+
+            
+
+
+
+
 
 
 

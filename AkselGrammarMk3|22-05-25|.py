@@ -3,72 +3,86 @@
 import random
 from tkinter import Y
 
-class Noun:                                                 #noun class, with: count/mass, plrurality
-    def __init__(self, base_form, count, plural):
-        self.base_form = base_form
-        self.count     = count
-        self.plural    = plural
-class Verb:                                                 #verb class with: max/min args, plurality, weak/strong
-    def __init__(self, base_form, maxargs, minargs, plural, weak = True):
-        self.base_form = base_form
-        self.maxargs   = maxargs
-        self.minargs   = minargs
-        self.plural    = plural
-        self.weak      = weak
-class Modal:                                                #modal class with: finite/infinitive
-    def __init__(self, base_form, finite):
-        self.base_form = base_form
-        self.finite    = finite
-class Determiner:                                           #determiner class with: plurality
-    def __init__(self, base_form, plural):
-        self.base_form = base_form
+class Noun:
+    def __init__(self, count, plural):
+        self.count  = count
         self.plural = plural
-class Pronoun:
-    def __init__(self, base_form, gender, plural):
-        self.base_form = base_form
-        self.gender = gender
-        self.plurality = plural
+class Verb:
+    def __init__(self, maxargs, minargs, plural, weak):
+        self.maxargs = maxargs
+        self.minargs = minargs
+        self.plural  = plural
+        self.weak    = weak
+class Modal:
+    def __init__(self, finite, tense):
+        self.finite = finite
+        self.tense  = tense
+class Determiner:
+    def __init__(self, plural):
+        self.plural = plural
+class Preposition:
+    def __init__(self):
+        pass
+class Adjective:
+    def __init__(self):
+        pass
+class Complimentizer:
+    def __init__(self):
+        pass
+    
 #some nouns
 NounDict             = {}
-NounDict ['love']    = ('love', False, False)
-NounDict ['beans']   = ('beans', True, True)
-NounDict ['sand']    = ('sand', False, False)
-NounDict ['cup']     = ('cup', True, False)
-NounDict ['cats']    = ('cats', True, True)
-NounDict ['bravery'] = ('bravery', False, True)
-NounDict ['oxen']    = ('oxen', True, True)
+NounDict ['love']    = (False, True)
+NounDict ['sand']    = (False, True)
+NounDict ['cup']     = (True, False)
+NounDict ['cats']    = (True, True)
+NounDict ['bravery'] = (False, True)
+NounDict ['oxen']    = (True, True)
 for word, properties in NounDict.items():
     word = Noun(*properties)
 #some verbs
 VerbDict               = {}
-VerbDict ['wait']      = ('wait', 1, 1, True)
-VerbDict ['waits']     = ('waits', 1, 1, False)
-VerbDict ['resonate']  = ('resonate', 2, 1, True)
-VerbDict ['resonates'] = ('resonates', 2, 1, False)
+VerbDict ['wait']      = (1, 1, True, True)
+VerbDict ['waits']     = (1, 1, False, True)
+VerbDict ['resonate']  = (2, 1, True, True)
+VerbDict ['resonates'] = (2, 1, False, True)
 for word, properties in VerbDict.items():
     word = Verb(*properties)
 #some modals
 ModalDict          = {}
-ModalDict ['will'] = ('will', True)
-ModalDict ['may']  = ('may', True)
-ModalDict ['can']  = ('can', True)
+ModalDict ['will'] = (True, 'future')
+ModalDict ['may']  = (True, 'future')
+ModalDict ['can']  = (True, 'future')
 for word, properties in ModalDict.items():
     word = Modal(*properties)
 #some determiners
 DeterminerDict          = {}
-DeterminerDict ['a']    = ('a', False)
-DeterminerDict ['the']  = ('the', False)
-DeterminerDict ['some'] = ('some', True)
-DeterminerDict ['an']   = ('an', False)
+DeterminerDict ['a']    = (False)
+DeterminerDict ['the']  = (False)
+DeterminerDict ['some'] = (True)
+DeterminerDict ['an']   = (False)
 for word, properties in DeterminerDict.items():
-    word = Determiner(*properties)
-#some pronouns
-PronounDict          = {}
-PronounDict ['it'] = ('it', None, False)
-PronounDict ['she']  = ('she', 'Feminine', False)
-PronounDict ['They']  = ('They', None, None)
-for word, properties in PronounDict.items():
-    word = Pronoun(*properties)
+    word = Determiner(properties)
+#some prepositions
+PrepositionDict            = {}
+PrepositionDict ['around'] = ()
+PrepositionDict ['near']   = ()
+PrepositionDict ['from']   = ()
+for word, properties in PrepositionDict.items():
+    word = Preposition(*properties)
+#some adjectives
+AdjectiveDict                 = {}
+AdjectiveDict ['hungry']      = ()
+AdjectiveDict ['rotund']      = ()
+AdjectiveDict ['thoughtless'] = ()
+for word, properties in AdjectiveDict.items():
+    word = Adjective(*properties)
+#some complimentizers
+ComplimentizerDict         =  {}
+ComplimentizerDict ['and'] = ()
+for word, properties in ComplimentizerDict.items():
+    word = Complimentizer(*properties)
+
 
 # Lexical Item Names
 M    = "modal"
@@ -78,7 +92,6 @@ N    = "noun"
 D    = "determiner"
 A    = "adjective"
 C    = "complimentizer"
-NP   = "noun phrase"
 NEG  = "not"
 DEG  = "degree"
 NAME = "name"
@@ -86,24 +99,25 @@ PRON = "pronoun"
 POSS = "possessive marker"
 NULL = ""
 # Phrase Structures
-NEGP  = ['NEGbar']
-MEASP = ['UNKNOWN']
-DEGP  = [['DEGbar']]
+NEGP  = [['NEGbar']]
+MEASP = [['UNKNOWN']]
+DEGP  = [['DEGbar', 'AP']]
 PP    = [['MEASP', 'Pbar']]
-DP    = [['NP', 'POSS'], D]
-NP    = ['PRON', 'NAME', 'Nbar', ['DP', 'Nbar'], ['DEGP', 'Nbar'], ['DP', 'DEGP', 'Nbar']]
-MP    = [['NP', 'Mbar'], ['Mbar']]
-VP    = [[V, 'VP'], ['Vbar']]
+DP    = [['Dbar']]
+NP    = ['PRON', 'NAME', ['DP', 'Nbar']]
+MP    = [['NP', 'Mbar']]                                 # MPs should also contain NPs
+VP    = [['Vbar', 'VP'], ['Vbar']]
 AP    = [['Abar']]
 CP    = [['Cbar']]
 # Prime Structures
 NEGbar = [['NEG', 'VP']]
 DEGbar = [['DEG', 'AP']]
-Mbar   = [[M, 'VP'], [M, 'NEGP', 'VP']]
-Nbar   = [[N, 'PP', 'CP']]
 Pbar   = [[P, 'NP'], [P, 'MP'], [P, 'PP']]
-Vbar   = [[V], [V, 'NP'], [V, 'NP', 'PP'], [V, 'PP'], [V, 'CP']]
-Abar   = [[A], [A, 'PP'], [A, 'CP'], [A, 'PP', 'CP']]
+Dbar   = [[D]]
+Nbar   = [[N], [N, 'PP']]                                # Nbars should also contain CPs
+Mbar   = [[M, 'VP'], [M, 'NEGP', 'VP']]
+Vbar   = [[V], [V, 'NP'], [V, 'NP', 'PP'], [V, 'PP']]
+Abar   = [[A, 'PP']]                                     # Abars should also contain CPs
 Cbar   = [[C, 'MP']]
 
 
@@ -117,10 +131,14 @@ def GetVerb():                                           #returns verb
     return random.choice(list(VerbDict.keys()))
 def GetNoun():                                           #returns noun
     return random.choice(list(NounDict.keys()))
-def GetPronoun():                                           #returns pronoun
-    return random.choice(list(PronounDict.keys()))
+def GetPreposition():
+    return random.choice(list(PrepositionDict.keys()))
+def GetAdjective():
+    return random.choice(list(AdjectiveDict.keys()))
+def GetComplimentizer():
+    return random.choice(list(Complimentizer.keys()))
 
-def GenerateNEGP():              
+def GenerateNEGP():
     return random.choice(NEGP)
 def GenerateMEASP():
     return random.choice(MEASP)
@@ -131,7 +149,7 @@ def GeneratePP():
 def GenerateDP():
     return random.choice(DP)
 def GenerateMP():
-    return random.choice(MP)  #this is generating the empty nodes instead of the markers that eventually represent those nodes
+    return random.choice(MP)             #this is generating the empty nodes instead of the markers that eventually represent those nodes
 def GenerateNP():
     return random.choice(NP) 
 def GenerateVP():
@@ -147,6 +165,8 @@ def GenerateDEGbar():
     return random.choice(DEGbar)
 def GeneratePbar():
     return random.choice(Pbar)
+def GenerateDbar():
+    return random.choice(Dbar)
 def GenerateMbar():
     return random.choice(Mbar)
 def GenerateNbar():
@@ -158,77 +178,132 @@ def GenerateAbar():
 def GenerateCbar():
     return random.choice(Cbar)
 
-def GeneratePhraseDaughters(phrases):
-    next_phrase_level = []
-    for phrase in phrases:
-        if phrase == 'MP':
-            next_phrase_level.append(GenerateMP())
-        elif phrase == 'NP':
-            next_phrase_level.append(GenerateNP())
-        elif phrase == 'VP':
-            next_phrase_level.append(GenerateVP())
-        elif phrase == 'CP':
-            next_phrase_level.append(GenerateCP())
-        elif phrase == 'PP':
-            next_phrase_level.append(GeneratePP())
-        elif phrase == 'Pbar':
-            next_phrase_level.append(GeneratePbar())
-        elif phrase == 'Nbar':
-            next_phrase_level.append(GenerateNbar())
-        elif phrase == 'Cbar':
-            next_phrase_level.append(GenerateCbar())
-        elif phrase == 'Mbar':
-            next_phrase_level.append(GenerateMbar())
-        elif phrase == 'Vbar':
-            next_phrase_level.append(GenerateVbar())
-    print('This is the current phrase Im returning:', next_phrase_level)
-    return next_phrase_level
 
-def GeneratePhraseToNodes(starting_point):
-    if 'MP' or 'NP' or 'VP' or 'CP' or 'PP' or 'Pbar' or 'Nbar' or 'Cbar' or 'Mbar' or 'Vbar' in starting_point:
-        nodes = GeneratePhraseToNodes(GeneratePhraseDaughters(starting_point))
-    else:
-        return nodes
 
-def SpelloutNodes(surface_structure):
-    spellout = []
-    for node in surface_structure:
-        if node == 'D':
-            spellout.append(GetDeterminer())
-        elif node == 'N':
-            spellout.append(GetNoun())
-        elif node == 'V':
-            spellout.append(GetVerb())
-        elif node == 'M':
-            spellout.append(GetModal())
-    return spellout
-
-def DeriveSpellout(initial_phrase):
-    SpelloutNodes(GeneratePhraseToNodes(initial_phrase))
+def GenPhraseToNodeMP():
+    JJ = 'y'
+    starting_mp = GenerateMP()
+    print(f'this is the starting MP: \n{starting_mp}')
+    while JJ == 'y':
+        one_layer_down = MoveOneLayerDeeper(starting_mp)
+        print(f'This should be one layer down from the last layer: \n{one_layer_down}')
+        print(f'would you like to apply again? (y/n)')
+        starting_mp = one_layer_down
+        JJ = input()
 
 
 
+    
 
+def MoveOneLayerDeeper(top_layer):
+    bottom_layer = []
+    for constituant in top_layer:
+        if constituant   == 'modal':
+            bottom_layer.append(GetModal())
+        elif constituant == 'verb':
+            bottom_layer.append(GetVerb())
+        elif constituant == 'preposition':
+            bottom_layer.append(GetPreposition())
+        elif constituant == 'noun':
+            bottom_layer.append(GetNoun())
+        elif constituant == 'determiner':
+            bottom_layer.append(GetDeterminer())
+        elif constituant == 'adjective':
+            bottom_layer.append(GetAdjective())
+        elif constituant == 'complimentizer':
+            bottom_layer.append(GetComplimentizer())
+        elif constituant == 'NEG':
+            bottom_layer.append('not')
+        elif constituant == 'degree':                        # FIX THIS, THIS IS A STOPGAP
+            bottom_layer.append('degree')                    
+        elif constituant == 'NAME':                          # FIX THIS, THIS IS A STOPGAP
+            bottom_layer.append('Jerry')          
+        elif constituant == 'PRON':
+            bottom_layer.append()
+        elif constituant == 'MP':
+            bottom_layer.append(GenerateMP())
+        elif constituant == 'VP':
+            bottom_layer.append(GenerateVP())
+        elif constituant == 'NP':
+            bottom_layer.append(GenerateNP())
+        elif constituant == 'DP':
+            bottom_layer.append(GenerateDP())
+        elif constituant == 'PP':
+            bottom_layer.append(GeneratePP())
+        elif constituant == 'AP':
+            bottom_layer.append(GenerateAP())
+        elif constituant == 'CP':
+            bottom_layer.append(GenerateCP())
+        elif constituant == 'Mbar':
+            bottom_layer.append(GenerateMbar())
+        elif constituant == 'Vbar':
+            bottom_layer.append(GenerateVbar())
+        elif constituant == 'Nbar':
+            bottom_layer.append(GenerateNbar())
+        elif constituant == 'Dbar':
+            bottom_layer.append(GenerateDbar())
+        elif constituant == 'Pbar':
+            bottom_layer.append(GeneratePbar())
+        elif constituant == 'Abar':
+            bottom_layer.append(GenerateAbar())
+        elif constituant == 'Cbar':
+            bottom_layer.append(GenerateCbar())
+        elif constituant == 'NEGbar':
+            bottom_layer.append(GenerateNEGbar())
+        elif constituant == 'DEGbar':
+            bottom_layer.append(GenerateDEGbar())
+    return bottom_layer
+        
+
+        
+
+# def GenPhraseToNodeMP():                          #should generate an MP down to the nodes ('N', 'Det', 'P', etc)
+#     EMPEE = GenerateMP()
+#     print(f'This is an MP that will be used to generate a sentence: {EMPEE}')
+#     for level_one_Constituent in range(len(EMPEE)):
+#         if level_one_Constituent == ['NP', 'Mbar']:
+#             for ConstitL2 in level_one_Constituent:
+#                 if ConstitL2 == 'NP':
+#                     ConstitL2 = GenerateNP()
+#                 elif ConstitL2 == 'Mbar':
+#                     ConstitL2 = GenerateMbar()
+#         elif level_one_Constituent == ['Mbar']:
+#             level_one_Constituent = GenerateMbar()
+#     return EMPEE
+
+# def GenPhraseToNodeMP():                          #should generate an MP down to the nodes ('N', 'Det', 'P', etc)
+#     EMPEE = GenerateMP()
+#     for ConstitL1 in range(len(EMPEE)):
+#         if ConstitL1 == ['NP', 'Mbar']:
+#             for ConstitL2 in ConstitL1:
+#                 if ConstitL2 == 'NP':
+#                     ConstitL2 = GenerateNP()
+#                 elif ConstitL2 == 'Mbar':
+#                     ConstitL2 = GenerateMbar()
+#         elif ConstitL1 == ['Mbar']:
+#             ConstitL1 = GenerateMbar()
+#     return EMPEE
+
+#   TRY RETURNING RATHER THAN PRINTING # THANK YOU MIN
 
 def Query():
-    print('What would you like to do?')
+    print(f'What would you like to do?')
     request = input()
     if request == 'full test':
-        print('The phrases:')
-        print(f'NEGP = {NEGP}, MEASP = {MEASP}, DEGP = {DEGP}, PP = {PP}, DP = {DP}, \nNP = {NP}, MP = {MP}, \nVP = {VP}, AP = {AP}, CP = {CP}')
-        print('The bars:')
-        print(f'NEGbar = {NEGbar}, DEGbar = {DEGbar}, Mbar = {Mbar}, Nbar = {Nbar}, \nPbar = {Pbar}, Vbar = {Vbar}, Abar = {Abar}, \nCbar = {Cbar}')
-        print('Checking the \'get\' statements:')
-        print(GetDeterminer(), GetNoun(), GetModal(), GetVerb())
+        print(f'     The phrases:\nNEGP =  {NEGP}\nMEASP = {MEASP}\nDEGP =  {DEGP}\nPP =    {PP}\nDP =    {DP}\nNP =    {NP}\nMP =    {MP}\nVP =    {VP}\nAP =    {AP}\nCP =    {CP}')
+        print('     The bars:')
+        print(f'NEGbar = {NEGbar}\nDEGbar = {DEGbar}\nMbar = {Mbar}\nNbar = {Nbar}\nPbar = {Pbar}\nVbar = {Vbar}\nAbar = {Abar}\nCbar = {Cbar}')
+        print('     The \'get\' statements:')
+        print(f'determiner = {GetDeterminer()}\nNoun = {GetNoun()}\nModal = {GetModal()}\nVerb = {GetVerb()}')
 
     elif request == 'phrase test':
         print('The phrases:')
-        print(f'NEGP = {NEGP}, MEASP = {MEASP}, DEGP = {DEGP}, PP = {PP}, DP = {DP}, \nNP = {NP}, MP = {MP}, \nVP = {VP}, AP = {AP}, CP = {CP}')
+        print(f'NEGP = {NEGP}\nMEASP = {MEASP}\nDEGP = {DEGP}\nPP = {PP}\nDP = {DP}, \nNP = {NP}\nMP = {MP}\nVP = {VP}\nAP = {AP}\nCP = {CP}')
     elif request == 'bar test':
         print('The bars:')
-        print(f'NEGbar = {NEGbar}, DEGbar = {DEGbar}, Mbar = {Mbar}, Nbar = {Nbar}, \nPbar = {Pbar}, Vbar = {Vbar}, Abar = {Abar}, \nCbar = {Cbar}')
+        print(f'NEGbar = {NEGbar}\nDEGbar = {DEGbar}\nMbar = {Mbar}\nNbar = {Nbar}, \nPbar = {Pbar}\nVbar = {Vbar}\nAbar = {Abar}bar test\nCbar = {Cbar}')
     elif request == 'get test':
-        print(GetDeterminer(), GetNoun(), GetModal(), GetVerb())
+        print(f'determiner = {GetDeterminer()}\nNoun = {GetNoun()}\nModal = {GetModal()}\nVerb = {GetVerb()}')
     
     elif request == 'MP':
         print('How many MPs would you like to print?')
@@ -243,7 +318,7 @@ def Query():
             print(GenerateNP())
             numPs -= 1
     elif request == 'VP':
-        print('How many NPs would you like to print?')
+        print('How many VPs would you like to print?')
         numPs = int(input())
         while numPs !=0:
             print(GenerateVP())
@@ -260,12 +335,24 @@ def Query():
         while numPs !=0:
             print(GeneratePP())
             numPs -= 1
+    elif request == 'DP':
+        print('How many DPs would you like to print?')
+        numPs = int(input())
+        while numPs !=0:
+            print(GenerateDP())
+            numPs -= 1
 
     elif request == 'Pbar':
         print('How many Pbars would you like to print?')
         numPs = int(input())
         while numPs !=0:
             print(GeneratePbar())
+            numPs -= 1
+    elif request == 'Dbar':
+        print('How many Dbars would you like to print?')
+        numPs = int(input())
+        while numPs !=0:
+            print(GenerateDbar())
             numPs -= 1
     elif request == 'Nbar':
         print('How many Nbars would you like to print?')
@@ -291,23 +378,18 @@ def Query():
         while numPs !=0:
             print(GenerateVbar())
             numPs -= 1
-    elif request == 'spellout':
-        print('what would you like to spellout?')
-        requested_top_level_phrase = input()
-        print('How many would you like to spell out?')
+
+    elif request == 'P2N MP':
+        print('How many MPs would you like to generate to the nodes?')
         numPs = int(input())
         while numPs !=0:
-            print((DeriveSpellout(requested_top_level_phrase)))
+            print(GenPhraseToNodeMP())
             numPs -= 1
-
-    #elif request == 'Pop Deep Structure':
-
 
     print('\nAnything else? (y/n)')
     if input() == 'y':
         Query()
 
-    
 
 
 print('')

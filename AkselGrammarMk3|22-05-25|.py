@@ -29,6 +29,9 @@ class Adjective:
 class Complimentizer:
     def __init__(self):
         pass
+class Pronoun:
+    def __init__(self):
+        pass
     
 #some nouns
 NounDict             = {}
@@ -82,6 +85,15 @@ ComplimentizerDict         =  {}
 ComplimentizerDict ['and'] = ()
 for word, properties in ComplimentizerDict.items():
     word = Complimentizer(*properties)
+#some pronouns
+PronounDict         =  {}
+PronounDict ['he']  = ()
+PronounDict ['she'] = ()
+PronounDict ['it']  = ()
+PronounDict ['they'] = ()
+for word, properties in PronounDict.items():
+    word = Pronoun(*properties)
+
 
 
 # Lexical Item Names
@@ -102,7 +114,7 @@ NULL = ""
 NEGP  = [['NEGbar']]
 MEASP = [['UNKNOWN']]
 DEGP  = [['DEGbar', 'AP']]
-PP    = [['MEASP', 'Pbar']]
+PP    = [['Pbar']]
 DP    = [['Dbar']]
 NP    = ['PRON', 'NAME', ['DP', 'Nbar']]
 MP    = [['NP', 'Mbar']]                                 # MPs should also contain NPs
@@ -112,7 +124,7 @@ CP    = [['Cbar']]
 # Prime Structures
 NEGbar = [['NEG', 'VP']]
 DEGbar = [['DEG', 'AP']]
-Pbar   = [[P, 'NP'], [P, 'MP'], [P, 'PP']]
+Pbar   = [[P, 'NP'], [P, 'MP']]                          # PBars should also contain PPs
 Dbar   = [[D]]
 Nbar   = [[N], [N, 'PP']]                                # Nbars should also contain CPs
 Mbar   = [[M, 'VP'], [M, 'NEGP', 'VP']]
@@ -136,7 +148,9 @@ def GetPreposition():
 def GetAdjective():
     return random.choice(list(AdjectiveDict.keys()))
 def GetComplimentizer():
-    return random.choice(list(Complimentizer.keys()))
+    return random.choice(list(ComplimentizerDict.keys()))
+def GetPronoun():
+    return random.choice(list(PronounDict.keys()))
 
 def GenerateNEGP():
     return random.choice(NEGP)
@@ -149,9 +163,9 @@ def GeneratePP():
 def GenerateDP():
     return random.choice(DP)
 def GenerateMP():
-    return random.choice(MP)             #this is generating the empty nodes instead of the markers that eventually represent those nodes
+    return random.choice(MP)
 def GenerateNP():
-    return random.choice(NP) 
+    return random.choice(NP)
 def GenerateVP():
     return random.choice(VP)
 def GenerateAP():
@@ -198,7 +212,9 @@ def GenPhraseToNodeMP():
 def MoveOneLayerDeeper(top_layer):
     bottom_layer = []
     for constituant in top_layer:
-        if constituant   == 'modal':
+        if type(constituant)   == list:
+            bottom_layer.append(MoveOneLayerDeeper(constituant))
+        elif constituant == 'modal':
             bottom_layer.append(GetModal())
         elif constituant == 'verb':
             bottom_layer.append(GetVerb())
@@ -212,14 +228,16 @@ def MoveOneLayerDeeper(top_layer):
             bottom_layer.append(GetAdjective())
         elif constituant == 'complimentizer':
             bottom_layer.append(GetComplimentizer())
+        elif constituant == 'NEGP':
+            bottom_layer.append(GenerateNEGP())
         elif constituant == 'NEG':
             bottom_layer.append('not')
         elif constituant == 'degree':                        # FIX THIS, THIS IS A STOPGAP
-            bottom_layer.append('degree')                    
+            bottom_layer.append('degree')                  
         elif constituant == 'NAME':                          # FIX THIS, THIS IS A STOPGAP
-            bottom_layer.append('Jerry')          
+            bottom_layer.append('Mia')
         elif constituant == 'PRON':
-            bottom_layer.append()
+            bottom_layer.append(GetPronoun())
         elif constituant == 'MP':
             bottom_layer.append(GenerateMP())
         elif constituant == 'VP':
@@ -252,42 +270,16 @@ def MoveOneLayerDeeper(top_layer):
             bottom_layer.append(GenerateNEGbar())
         elif constituant == 'DEGbar':
             bottom_layer.append(GenerateDEGbar())
+        else:
+            bottom_layer.append(constituant)
     return bottom_layer
         
 
-        
 
-# def GenPhraseToNodeMP():                          #should generate an MP down to the nodes ('N', 'Det', 'P', etc)
-#     EMPEE = GenerateMP()
-#     print(f'This is an MP that will be used to generate a sentence: {EMPEE}')
-#     for level_one_Constituent in range(len(EMPEE)):
-#         if level_one_Constituent == ['NP', 'Mbar']:
-#             for ConstitL2 in level_one_Constituent:
-#                 if ConstitL2 == 'NP':
-#                     ConstitL2 = GenerateNP()
-#                 elif ConstitL2 == 'Mbar':
-#                     ConstitL2 = GenerateMbar()
-#         elif level_one_Constituent == ['Mbar']:
-#             level_one_Constituent = GenerateMbar()
-#     return EMPEE
 
-# def GenPhraseToNodeMP():                          #should generate an MP down to the nodes ('N', 'Det', 'P', etc)
-#     EMPEE = GenerateMP()
-#     for ConstitL1 in range(len(EMPEE)):
-#         if ConstitL1 == ['NP', 'Mbar']:
-#             for ConstitL2 in ConstitL1:
-#                 if ConstitL2 == 'NP':
-#                     ConstitL2 = GenerateNP()
-#                 elif ConstitL2 == 'Mbar':
-#                     ConstitL2 = GenerateMbar()
-#         elif ConstitL1 == ['Mbar']:
-#             ConstitL1 = GenerateMbar()
-#     return EMPEE
-
-#   TRY RETURNING RATHER THAN PRINTING # THANK YOU MIN
 
 def Query():
-    print(f'What would you like to do?')
+    print(f'What would you like to do?\nYou can say:\n1 - - Generate an MP to the nodes\n2 - - Generate an MP')
     request = input()
     if request == 'full test':
         print(f'     The phrases:\nNEGP =  {NEGP}\nMEASP = {MEASP}\nDEGP =  {DEGP}\nPP =    {PP}\nDP =    {DP}\nNP =    {NP}\nMP =    {MP}\nVP =    {VP}\nAP =    {AP}\nCP =    {CP}')
@@ -305,7 +297,7 @@ def Query():
     elif request == 'get test':
         print(f'determiner = {GetDeterminer()}\nNoun = {GetNoun()}\nModal = {GetModal()}\nVerb = {GetVerb()}')
     
-    elif request == 'MP':
+    elif request == '2':
         print('How many MPs would you like to print?')
         numPs = int(input())
         while numPs !=0:
@@ -379,7 +371,7 @@ def Query():
             print(GenerateVbar())
             numPs -= 1
 
-    elif request == 'P2N MP':
+    elif request == '1':
         print('How many MPs would you like to generate to the nodes?')
         numPs = int(input())
         while numPs !=0:
@@ -410,9 +402,3 @@ print('')
 
 
 
-
-
-
-
-#   JUNK TO GO GET TO LATER
-#Vprime   = [[V], [V, NP], [V, DEGP], [V, PP], [V, CP], [V, NP, DEGP], [V, NP, PP], [V, NP, CP], [V, ]PP, CP] # FINISH MAKING ALL POSSIBLE Vprime COMBOS
